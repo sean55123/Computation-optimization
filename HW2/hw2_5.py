@@ -80,9 +80,7 @@ def abs_h_neg_rule(m, k):
     return m.eps_h[k] >= -(m.y[k, 2] - h_sp)
 model.abs_h_neg = Constraint(model.K, rule=abs_h_neg_rule)
 
-# ============================================================
 # Objective function
-# ============================================================
 def obj_rule(m):
     return sum(m.eps_c[k] + m.eps_h[k] for k in m.K)
 model.obj = Objective(rule=obj_rule, sense=minimize)
