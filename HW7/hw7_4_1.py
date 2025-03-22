@@ -11,13 +11,22 @@ def create_relaxed_model(duration_set=1, fixed_vars=None):
     
     r_data = {1: 2, 2: 3, 3: 4, 4: 5, 5: 10, 6: 1, 7: 2} 
     d_data = {1: 16, 2: 13, 3: 21, 4: 28, 5: 24, 6: 28, 7: 23} 
-    p_data = {(1, 1): 5, (1, 2): 7, (1, 3): 6,
-            (2, 1): 3, (2, 2): 4, (2, 3): 3,
-            (3, 1): 2, (3, 2): 4, (3, 3): 3,
-            (4, 1): 3, (4, 2): 6, (4, 3): 4,
-            (5, 1): 2, (5, 2): 4, (5, 3): 3,
-            (6, 1): 1, (6, 2): 3, (6, 3): 2,
-            (7, 1): 1, (7, 2): 2, (7, 3): 1}  
+    if duration_set == 1:
+        p_data = {(1, 1): 10, (1, 2): 14, (1, 3): 12,
+                  (2, 1): 6, (2, 2): 8, (2, 3): 7,
+                  (3, 1): 11, (3, 2): 16, (3, 3): 13,
+                  (4, 1): 6, (4, 2): 12, (4, 3): 8,
+                  (5, 1): 10, (5, 2): 16, (5, 3): 12,
+                  (6, 1): 7, (6, 2): 12, (6, 3): 10,
+                  (7, 1): 10, (7, 2): 8, (7, 3): 10}
+    elif duration_set == 2:
+        p_data = {(1, 1): 5, (1, 2): 7, (1, 3): 6,
+                  (2, 1): 3, (2, 2): 4, (2, 3): 3,
+                  (3, 1): 2, (3, 2): 4, (3, 3): 3,
+                  (4, 1): 3, (4, 2): 6, (4, 3): 4,
+                  (5, 1): 2, (5, 2): 4, (5, 3): 3,
+                  (6, 1): 1, (6, 2): 3, (6, 3): 2,
+                  (7, 1): 1, (7, 2): 2, (7, 3): 1}
     c_data = {(1, 1): 10, (1, 2): 6, (1, 3): 8,
             (2, 1): 8, (2, 2): 5, (2, 3): 6,
             (3, 1): 12, (3, 2): 7, (3, 3): 10,
@@ -186,6 +195,7 @@ def branch_and_bound_most_fractional(duration_set=1, time_limit=300):
     
     # Initialize
     nodes_explored = 0
+    branches_created = 0
     best_obj = float('inf')
     best_solution = None
     
@@ -254,6 +264,8 @@ def branch_and_bound_most_fractional(duration_set=1, time_limit=300):
                 right_fixed[branch_var] = 1
                 heapq.heappush(queue, (obj_value, -node_id, right_fixed))
                 node_id += 1
+                
+                branches_created += 2
     
     # Print final statistics
     elapsed_time = time.time() - start_time
@@ -268,19 +280,19 @@ def branch_and_bound_most_fractional(duration_set=1, time_limit=300):
             if val > 0.5:
                 print(f"Job {i} assigned to Machine {m}")
     
-    return best_obj, best_solution, nodes_explored
+    return best_obj, best_solution, nodes_explored, branches_created
 
 # Run the branch and bound algorithm for problem set 1
 print("Solving problem set 1 with most fractional variable branching rule...")
-obj1, solution1, nodes1 = branch_and_bound_most_fractional(duration_set=1)
+obj1, solution1, nodes1, branches_created1 = branch_and_bound_most_fractional(duration_set=1)
 
 print("\n" + "="*50 + "\n")
 
 # Run the branch and bound algorithm for problem set 2
 print("Solving problem set 2 with most fractional variable branching rule...")
-obj2, solution2, nodes2 = branch_and_bound_most_fractional(duration_set=2)
+obj2, solution2, nodes2, branches_created2 = branch_and_bound_most_fractional(duration_set=2)
 
 print("\n" + "="*50 + "\n")
 print(f"Summary:")
-print(f"Problem set 1: Objective = {obj1:.2f}, Nodes explored = {nodes1}")
-print(f"Problem set 2: Objective = {obj2:.2f}, Nodes explored = {nodes2}")
+print(f"Problem set 1: Objective = {obj1:.2f}, Branch and bonds explored in total = {branches_created1+nodes1}")
+print(f"Problem set 2: Objective = {obj2:.2f}, Branch and bonds explored in total = {branches_created2+nodes2}")
